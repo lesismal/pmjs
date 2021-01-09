@@ -1,0 +1,39 @@
+.pm_hide {
+    display: none;
+}
+
+.side_bar {
+    float: left;
+    width: 100px;
+    height: 600px;
+    background-color: rgb(219, 212, 212);
+}
+
+.button {
+    float: center;
+    height: 60px;
+    width: 100px;
+    border: 1px;
+    background-color: rgb(62, 128, 190);
+}
+
+.button:hover {
+    background-color: #82bb82;
+}
+
+.button:focus {
+    background-color: #a86b6b;
+}
+
+
+.button:active {
+    background-color: #796f6f;
+}
+
+
+.page {
+    float: left;
+    width: 800px;
+    height: 600px;
+    background-color: rgb(162, 172, 120);
+}

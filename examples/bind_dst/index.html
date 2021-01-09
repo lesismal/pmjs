@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PM JS</title>
+    <script src="js/pm.js" type="text/javascript"></script>
+    <style>
+        .pm_hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- dst element page_1, default page to show -->
+    <div id="page_1"></div>
+
+    <!-- dst element page_2, default to hide this page -->
+    <div id="page_2" class="pm_hide"></div>
+
+    <script>
+        let pages = [
+            {
+                // dst element id/page element id
+                dst: "page_1",
+                // sub-html-page, which would be loaded to dst element.innerHTML
+                url: "page/page_1.html",
+                // init will be called when the page is loaded, if there's not an url, it will be called immediately
+                init: function (page) {
+                    console.log("page_1 init");
+                },
+                // onshow will be called every time when this page is displayed
+                onshow: function (page) {
+                    console.log("page_1 onshow");
+                },
+                // onshow will be called every time when this page is hided
+                onhide: function (page) {
+                    console.log("page_1 onhide");
+                },
+            },
+            {
+                dst: "page_2",
+                url: "page/page_2.html",
+                lazy: true,
+                init: function (page) {
+                    console.log("page_2 init");
+                },
+                onshow: function (page) {
+                    console.log("page_2 onshow");
+                },
+                onhide: function (page) {
+                    console.log("page_2 onhide");
+                    // release this page when hided, then reload this page every time
+                    $pm.release(page);
+                }
+            },
+            // many pages ...
+        ];
+        $pm.bindPages(pages);
+
+        let i = 0;
+        setInterval(function () {
+            i++;
+            // change a page to display, and hide others
+            let nextDisplay = pages[i % pages.length].dst;
+            $pm.select(nextDisplay);
+        }, 1000);
+    </script>
+</body>
+
+</html>

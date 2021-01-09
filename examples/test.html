@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AIR JS</title>
+    <script src="../js/pm.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <p>See The Console Output</p>
+    <script>
+        $pm.sub("aaa", "e", function (e) {
+            console.log("--- aaa:", e.tag, e.name, e.data);
+        });
+
+        $pm.sub("bbb", "e", function (e) {
+            console.log("--- bbb:", e.tag, e.name, e.data);
+        });
+
+        $pm.pub("e", "xxx");
+        $pm.pub("e", "yyy");
+        $pm.pub("e", "zzz");
+    </script>
+</body>
+
+</html>

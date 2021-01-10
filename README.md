@@ -21,6 +21,8 @@
 
 - [bind pages and click](https://github.com/lesismal/pm/tree/master/examples/bind_src_dst)
 
+- [pub/sub - bind element and event](https://github.com/lesismal/pm/blob/master/examples/element.html)
+
 ## Quic Start
 
 > js

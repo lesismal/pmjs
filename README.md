@@ -15,6 +15,8 @@
 2. get an HTML-SUB-PAGE immediately if it is not lazy, else get it when selected, and then set the dst element.innerHTML by the content.
 3. control page display or hide by setting the dst element.style.display="block"/"none", then '$pm.select(src/dst id)' to change page, without change routers.
 
+- Read the code for more details: **[pm.js](https://github.com/lesismal/pm/blob/master/js/pm.js)** , **[pm.ts](https://github.com/lesismal/pm/blob/master/ts/pm.ts)**
+
 ## Examples
 
 - [bind pages](https://github.com/lesismal/pm/tree/master/examples/bind_dst)

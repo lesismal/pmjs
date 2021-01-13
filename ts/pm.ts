@@ -87,23 +87,24 @@ export default class PM {
         }
     }
 
-    bindPages(selectors: any, parent: string): void {
-        if (!(selectors instanceof Array)) return;
+    bindPages(pages: any, parent: string): void {
+        if (!(pages instanceof Array)) return;
 
         let self = this;
         let _selected: String = "";
-        for (let i = 0; i < selectors.length; i++) {
-            let page: any = selectors[i];
+        for (let i = 0; i < pages.length; i++) {
+            let page: any = pages[i];
             let src: string = page.src;
             let dst: string = page.dst;
             let url: string = page.url;
             let preOnclick;
             let onselect = function (e) {
                 if (_selected == dst) return;
+                let pre = _selected;
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
-                for (let j in selectors) {
-                    let p = selectors[j];
+                for (let j in pages) {
+                    let p = pages[j];
                     let dElem = self.element(p.dst);
                     if (p.dst == dst) {
                         let pid: string = parent;
@@ -112,7 +113,7 @@ export default class PM {
                         }
                         pid && self.select(pid);
                         dElem.style.display = 'block';
-                        _selected = dst;
+                        _selected = p;
                         if (!page.inited) {
                             page.inited = true;
                             if (url && !page.urlInited) {
@@ -133,7 +134,7 @@ export default class PM {
                         }
                     } else {
                         dElem.style.display = 'none';
-                        p.onhide && p.onhide(pages[j]);
+                        p.onhide && pre == p && p.onhide(p);
                     }
                 }
             }

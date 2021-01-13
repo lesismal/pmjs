@@ -100,6 +100,7 @@ class PM {
             let preOnclick;
             let onselect = function (e) {
                 if (_selected == dst) return;
+                let pre = _selected;
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
                 for (let j in pages) {
@@ -112,7 +113,7 @@ class PM {
                         }
                         pid && self.select(pid);
                         dElem.style.display = 'block';
-                        _selected = dst;
+                        _selected = p;
                         if (!page.inited) {
                             page.inited = true;
                             if (page.url && !page.urlInited) {
@@ -133,7 +134,7 @@ class PM {
                         }
                     } else {
                         dElem.style.display = 'none';
-                        p.onhide && p.onhide(pages[j]);
+                        p.onhide && pre == p && p.onhide(pages[j]);
                     }
                 }
             }

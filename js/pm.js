@@ -97,7 +97,7 @@ class PM {
         binder.pop = function () {
             if (binder.stacks.length > 2) {
                 binder.stacks.pop();
-                self.select(binder.stacks[binder.stacks.length - 1]);
+                self.select(binder.stacks[binder.stacks.length - 1].dst);
             }
         };
 
@@ -122,7 +122,7 @@ class PM {
                         pid && self.select(pid);
                         dElem.style.display = 'block';
                         binder.selected = p;
-                        binder.stacks.push(p.dst);
+                        binder.stacks.push(p);
                         if (!p.inited) {
                             p.inited = true;
                             if (p.url && !p.urlInited) {

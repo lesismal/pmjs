@@ -87,11 +87,11 @@ export default class PM {
         }
     }
 
-    bindPages(pages: any, parent: string): void {
+    bindPages(pages: any, onchange: Function, parent: string): void {
         if (!(pages instanceof Array)) return;
 
         let self = this;
-        let _selected: String = "";
+        let _selected: any = "";
         for (let i = 0; i < pages.length; i++) {
             let page: any = pages[i];
             let src: string = page.src;
@@ -99,44 +99,46 @@ export default class PM {
             let url: string = page.url;
             let preOnclick;
             let onselect = function (e) {
-                if (_selected == dst) return;
+                if (_selected == page) return;
                 let pre = _selected;
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
                 for (let j in pages) {
                     let p = pages[j];
                     let dElem = self.element(p.dst);
-                    if (p.dst == dst) {
-                        let pid: string = parent;
-                        if (page.parent) {
-                            pid = page.parent;
+                    if (p == page) {
+                        let pid = parent;
+                        if (p.parent) {
+                            pid = p.parent;
                         }
                         pid && self.select(pid);
                         dElem.style.display = 'block';
                         _selected = p;
-                        if (!page.inited) {
-                            page.inited = true;
-                            if (url && !page.urlInited) {
-                                page.urlInited = true;
-                                self.loadHTML(dst, url, function () {
-                                    page.init && page.init(page);
-                                    f && f(page);
-                                    page.onshow && page.onshow(page);
+                        if (!p.inited) {
+                            p.inited = true;
+                            if (p.url && !p.urlInited) {
+                                p.urlInited = true;
+                                self.loadHTML(dst, p.url, function () {
+                                    page.urlInited = true;
+                                    p.init && p.init(p);
+                                    p.onshow && p.onshow(p);
+                                    f && f(p);
                                 });
                             } else {
-                                page.init && page.init(page);
-                                f && f(page);
-                                page.onshow && page.onshow(page);
+                                p.init && p.init(p);
+                                p.onshow && p.onshow(p);
+                                f && f(p);
                             }
                         } else {
-                            f && f(page);
-                            page.onshow && page.onshow(page);
+                            !(p.url && !p.urlInited) && p.onshow && page.onshow(p);
+                            f && f(p);
                         }
                     } else {
                         dElem.style.display = 'none';
                         p.onhide && pre == p && p.onhide(p);
                     }
                 }
+                onchange && onchange(pre, _selected);
             }
             if (src) {
                 let sElem = self.element(src);
@@ -149,19 +151,49 @@ export default class PM {
             self.sub(selEvt, selEvt, onselect);
 
             if (!page.inited) {
-                if (!url) {
+                if (!page.url) {
                     page.inited = true;
                     page.init && page.init(page);
                 } else if (!page.urlInited && !page.lazy) {
                     page.inited = true;
-                    page.urlInited = true;
-                    self.loadHTML(dst, url, function () {
+                    // page.urlInited = true;
+                    self.loadHTML(dst, page.url, function () {
+                        page.urlInited = true;
                         page.init && page.init(page);
                     });
                 }
             }
-            self.bindPages(page.children, src);
+            self.bindPages(page.children, onchange, src);
         }
+    }
+
+    parseUrl(): any {
+        let detail = location.hash.split("?");
+        let path = detail[0].split("#");
+        let router = path[1];
+        let values = {};
+        let params = detail[1] ? detail[1].split("&") : [];
+        for (let i = 0; i < params.length; i++) {
+            let kv = params[i].split("=");
+            values[kv[0]] = kv[1];
+        }
+        return {
+            path: path[0],
+            router: router,
+            values: values
+        }
+    }
+
+    listenRouter(cb: Function): void {
+        let self = this;
+        let refresh = function () {
+            let url = self.parseUrl();
+            self.select(url.router);
+            cb && cb(url);
+        }
+        // window.addEventListener('load', refresh);
+        window.addEventListener('hashchange', refresh);
+        refresh();
     }
 
     select(targetID: string, ...data: any): void {
@@ -177,9 +209,9 @@ export default class PM {
         }
     }
 
-    loadHTML(id: string, url: string, ...cb: any): void {
+    loadHTML(id: string, url: string, ...cb: any): any {
         let self = this;
-        self.request("GET", url, null, function (res: any) {
+        return self.request("GET", url, null, function (res: any) {
             if (res.code == 200) {
                 self.element(id).innerHTML = res.data;
             }

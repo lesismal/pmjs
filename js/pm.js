@@ -88,55 +88,66 @@ class PM {
         }
     }
 
-    bindPages(pages, parent) {
+    bindPages(pages, onchange, parent) {
         if (!(pages instanceof Array)) return;
 
         let self = this;
-        let _selected = false;
+
+        let binder = { stacks: [] };
+        binder.pop = function () {
+            if (binder.stacks.length > 2) {
+                binder.stacks.pop();
+                self.select(binder.stacks[binder.stacks.length - 1]);
+            }
+        };
+
         for (let i = 0; i < pages.length; i++) {
             let page = pages[i];
             let src = page.src;
             let dst = page.dst;
             let preOnclick;
             let onselect = function (e) {
-                if (_selected == dst) return;
-                let pre = _selected;
+                if (binder.selected == page) return;
+                let pre = binder.selected;
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
                 for (let j in pages) {
                     let p = pages[j];
                     let dElem = self.element(p.dst);
-                    if (p.dst == dst) {
+                    if (p == page) {
                         let pid = parent;
-                        if (page.parent) {
-                            pid = page.parent;
+                        if (p.parent) {
+                            pid = p.parent;
                         }
                         pid && self.select(pid);
                         dElem.style.display = 'block';
-                        _selected = p;
-                        if (!page.inited) {
-                            page.inited = true;
-                            if (page.url && !page.urlInited) {
-                                page.urlInited = true;
-                                self.loadHTML(dst, page.url).then(function () {
-                                    page.init && page.init(page);
-                                    f && f(page);
-                                    page.onshow && page.onshow(page);
+                        binder.selected = p;
+                        binder.stacks.push(p.dst);
+                        if (!p.inited) {
+                            p.inited = true;
+                            if (p.url && !p.urlInited) {
+                                p.urlInited = true;
+                                self.loadHTML(dst, p.url, function () {
+                                    page.urlInited = true;
+                                    p.init && p.init(p);
+                                    p.onshow && p.onshow(p);
+                                    f && f(p);
                                 });
                             } else {
-                                page.init && page.init(page);
-                                f && f(page);
-                                page.onshow && page.onshow(page);
+                                p.init && p.init(p);
+                                p.onshow && p.onshow(p);
+                                f && f(p);
                             }
                         } else {
-                            f && f(page);
-                            page.onshow && page.onshow(page);
+                            !(p.url && !p.urlInited) && p.onshow && page.onshow(p);
+                            f && f(p);
                         }
                     } else {
                         dElem.style.display = 'none';
-                        p.onhide && pre == p && p.onhide(pages[j]);
+                        p.onhide && pre == p && p.onhide(p);
                     }
                 }
+                onchange && onchange(pre, binder.selected);
             }
             if (src) {
                 let sElem = self.element(src);
@@ -154,14 +165,46 @@ class PM {
                     page.init && page.init(page);
                 } else if (!page.urlInited && !page.lazy) {
                     page.inited = true;
-                    page.urlInited = true;
-                    self.loadHTML(dst, page.url).then(function () {
+                    // page.urlInited = true;
+                    self.loadHTML(dst, page.url, function () {
+                        page.urlInited = true;
                         page.init && page.init(page);
                     });
                 }
             }
-            self.bindPages(page.children, src);
+            self.bindPages(page.children, onchange, src);
         }
+
+        return binder
+    }
+
+    parseUrl() {
+        let detail = location.hash.split("?");
+        let path = detail[0].split("#");
+        let router = path[1];
+        let values = {};
+        let params = detail[1] ? detail[1].split("&") : [];
+        for (let i = 0; i < params.length; i++) {
+            let kv = params[i].split("=");
+            values[kv[0]] = kv[1];
+        }
+        return {
+            path: path[0],
+            router: router,
+            values: values
+        }
+    }
+
+    listenRouter(cb) {
+        let self = this;
+        let refresh = function () {
+            let url = self.parseUrl();
+            self.select(url.router);
+            cb && cb(url);
+        }
+        // window.addEventListener('load', refresh);
+        window.addEventListener('hashchange', refresh);
+        refresh();
     }
 
     select(targetID, data) {

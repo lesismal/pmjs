@@ -91,21 +91,9 @@ class PM {
     bindPages(pages, onchange, parent) {
         if (!(pages instanceof Array)) return;
 
-        // let inited = false;
         let self = this;
 
-        let binder = { stacks: [] };
-        binder._push = function (p) {
-            if (binder.stacks.length < 1024) {
-                binder.stacks.push(p);
-            }
-        };
-        binder.pop = function () {
-            if (binder.stacks.length > 2) {
-                binder.stacks.pop();
-                self.select(binder.stacks[binder.stacks.length - 1].dst);
-            }
-        }
+        let selected;
 
         for (let i = 0; i < pages.length; i++) {
             let page = pages[i];
@@ -116,14 +104,13 @@ class PM {
             if (page.parent) {
                 pid = page.parent;
             }
-            !i && (binder.selected = page);
+            !i && (selected = page);
             i && (self.element(page.dst).style.display = 'none');
 
             let onselect = function (e) {
-                if (page.inited && binder.selected == page) return;
-                let pre = binder.selected;
-                binder.selected = page;
-                binder._push(page);
+                if (page.inited && selected == page) return;
+                let pre = selected;
+                selected = page;
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
 
@@ -154,7 +141,7 @@ class PM {
                     !(page.url && !page.urlInited) && page.onshow && page.onshow(page);
                     f && f(page);
                 }
-                onchange && onchange(pre, binder.selected);
+                onchange && onchange(pre, selected);
             }
             if (src) {
                 let sElem = self.element(src);
@@ -182,8 +169,6 @@ class PM {
             }
             self.bindPages(page.children, onchange, src);
         }
-
-        return binder
     }
 
     parseUrl() {

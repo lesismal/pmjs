@@ -92,9 +92,7 @@ class PM {
         if (!(pages instanceof Array)) return;
 
         let self = this;
-
         let selected;
-
         for (let i = 0; i < pages.length; i++) {
             let page = pages[i];
             let src = page.src;

@@ -4,24 +4,19 @@
 <head>
     <title>PM JS</title>
     <script src="js/pm.js" type="text/javascript"></script>
-    <style>
-        .pm_hide {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
-    <!-- dst element page_1, default page to show -->
+    <!-- page_1 -->
     <div id="page_1"></div>
 
-    <!-- dst element page_2, default to hide this page -->
-    <div id="page_2" class="pm_hide"></div>
+    <!-- page_2 -->
+    <div id="page_2"></div>
 
     <script>
         let pages = [
             {
-                // dst element id/page element id
+                // page element id
                 dst: "page_1",
                 // sub-html-page, which would be loaded to dst element.innerHTML
                 url: "page/page_1.html",
@@ -61,9 +56,11 @@
         let i = 0;
         setInterval(function () {
             i++;
-            // change a page to display, and hide others
-            let nextDisplay = pages[i % pages.length].dst;
-            $pm.select(nextDisplay);
+            if (i < 5) {
+                // change a page to display, and hide others
+                let nextDisplay = pages[i % pages.length].dst;
+                $pm.select(nextDisplay);
+            }
         }, 1000);
     </script>
 </body>

@@ -1,9 +1,7 @@
 let pages = [
     {
-        // src element id, when the element.onclick is called, or $pm.select(src), this dst element will be display, and other pages's dst element will be hide.
-        src: "page_1_src",
         // dst element id/page element id
-        dst: "page_1_dst",
+        dst: "page_1",
         // sub-html-page, which would be loaded to dst element.innerHTML
         url: "page/page_1.html",
         // init will be called when the page is loaded, if there's not an url, it will be called immediately
@@ -22,8 +20,7 @@ let pages = [
         children: [],
     },
     {
-        src: "page_2_src",
-        dst: "page_2_dst",
+        dst: "page_2",
         url: "page/page_2.html",
         lazy: true,
         init: function (page) {
@@ -38,9 +35,9 @@ let pages = [
     },
     // many pages ...
 ];
-$pm.ready(function () {
-    $pm.bindPages(pages);
-});
+$pm.bindPages(pages);
+$pm.select("page_1");
+$pm.listenRouter();
 
 let i = 0;
 setInterval(function () {

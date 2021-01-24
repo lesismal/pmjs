@@ -10,16 +10,20 @@
 <body>
     <div id="menu" class="side_bar">
         <div style="height: 2px;">&nbsp;</div>
-        <button id="page_1_src" type="button" class="button">Page 1<br>Click Me</button>
+        <button class="button">
+            <a href="#page_1" class="button">Page 1<br>Click Me</a>
+        </button>
         <div style="height: 2px;">&nbsp;</div>
-        <button id="page_2_src" type="button" class="button">Page 2<br>Click Me</button>
+        <button class="button">
+            <a href="#page_2">Page 2<br>Click Me</a>
+        </button>
     </div>
 
     <div class="page">
-        <!-- dst element page_1, default page to show -->
-        <div id="page_1_dst"></div>
-        <!-- dst element page_2, default to hide this page -->
-        <div id="page_2_dst" class="pm_hide"></div>
+        <!-- page_1 -->
+        <div id="page_1"></div>
+        <!-- page_2 -->
+        <div id="page_2"></div>
     </div>
 
     <!-- load js async -->

@@ -8,6 +8,7 @@
 - [x] Async Loading HTML/JS
 - [x] Event Management, Pub/Sub
 - [x] JS/TS Supported
+- [x] HashRouter Supported
 
 ## Implementation
 
@@ -15,7 +16,7 @@
 2. get an HTML-SUB-PAGE immediately if it is not lazy, else get it when selected, and then set the dst element.innerHTML by the content.
 3. control page display or hide by setting the dst element.style.display="block"/"none", then '$pm.select(src/dst id)' to change page, without change routers.
 
-- Read the code for more details: **[pm.js](https://github.com/lesismal/pm/blob/master/js/pm.js)** , **[pm.ts](https://github.com/lesismal/pm/blob/master/ts/pm.ts)**
+- Read the code for more details: **[pm.js](https://github.com/lesismal/pm/blob/master/js/pm.js)**
 
 ## Examples
 
@@ -47,24 +48,19 @@
 <head>
     <title>PM JS</title>
     <script src="js/pm.js" type="text/javascript"></script>
-    <style>
-        .pm_hide {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
-    <!-- dst element page_1, default page to show -->
+    <!-- page_1 -->
     <div id="page_1"></div>
 
-    <!-- dst element page_2, default to hide this page -->
-    <div id="page_2" class="pm_hide"></div>
+    <!-- page_2 -->
+    <div id="page_2"></div>
 
     <script>
         let pages = [
             {
-                // dst element id/page element id
+                // page element id
                 dst: "page_1",
                 // sub-html-page, which would be loaded to dst element.innerHTML
                 url: "page/page_1.html",
@@ -104,9 +100,11 @@
         let i = 0;
         setInterval(function () {
             i++;
-            // change a page to display, and hide others
-            let nextDisplay = pages[i % pages.length].dst;
-            $pm.select(nextDisplay);
+            if (i < 5) {
+                // change a page to display, and hide others
+                let nextDisplay = pages[i % pages.length].dst;
+                $pm.select(nextDisplay);
+            }
         }, 1000);
     </script>
 </body>

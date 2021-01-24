@@ -91,61 +91,68 @@ class PM {
     bindPages(pages, onchange, parent) {
         if (!(pages instanceof Array)) return;
 
+        // let inited = false;
         let self = this;
 
         let binder = { stacks: [] };
+        binder._push = function (p) {
+            if (binder.stacks.length < 1024) {
+                binder.stacks.push(p);
+            }
+        };
         binder.pop = function () {
             if (binder.stacks.length > 2) {
                 binder.stacks.pop();
                 self.select(binder.stacks[binder.stacks.length - 1].dst);
             }
-        };
+        }
 
         for (let i = 0; i < pages.length; i++) {
             let page = pages[i];
             let src = page.src;
             let dst = page.dst;
             let preOnclick;
+            let pid = parent;
+            if (page.parent) {
+                pid = page.parent;
+            }
+            !i && (binder.selected = page);
+            i && (self.element(page.dst).style.display = 'none');
+
             let onselect = function (e) {
-                if (binder.selected == page) return;
+                if (page.inited && binder.selected == page) return;
                 let pre = binder.selected;
+                binder.selected = page;
+                binder._push(page);
                 let f = (typeof (e.data) == 'function') ? e.data : undefined;
                 preOnclick && preOnclick();
-                for (let j in pages) {
-                    let p = pages[j];
-                    let dElem = self.element(p.dst);
-                    if (p == page) {
-                        let pid = parent;
-                        if (p.parent) {
-                            pid = p.parent;
-                        }
-                        pid && self.select(pid);
-                        dElem.style.display = 'block';
-                        binder.selected = p;
-                        binder.stacks.push(p);
-                        if (!p.inited) {
-                            p.inited = true;
-                            if (p.url && !p.urlInited) {
-                                p.urlInited = true;
-                                self.loadHTML(dst, p.url, function () {
-                                    page.urlInited = true;
-                                    p.init && p.init(p);
-                                    p.onshow && p.onshow(p);
-                                    f && f(p);
-                                });
-                            } else {
-                                p.init && p.init(p);
-                                p.onshow && p.onshow(p);
-                                f && f(p);
-                            }
-                        } else {
-                            !(p.url && !p.urlInited) && p.onshow && page.onshow(p);
-                            f && f(p);
-                        }
+
+                if (pre) {
+                    self.element(pre.dst).style.display = 'none';
+                    pre.onhide && pre.onhide(pre);
+                }
+
+                pid && self.select(pid);
+                self.element(page.dst).style.display = 'block';
+
+                if (!page.inited) {
+                    page.inited = true;
+                    if (page.url && !page.urlInited) {
+                        page.urlInited = true;
+                        self.loadHTML(dst, page.url, function () {
+                            page.urlInited = true;
+                            page.init && page.init(page);
+                            page.onshow && page.onshow(page);
+                            f && f(page);
+                        });
                     } else {
-                        dElem.style.display = 'none';
-                        p.onhide && pre == p && p.onhide(p);
+                        page.init && page.init(page);
+                        page.onshow && page.onshow(page);
+                        f && f(page);
                     }
+                } else {
+                    !(page.url && !page.urlInited) && page.onshow && page.onshow(page);
+                    f && f(page);
                 }
                 onchange && onchange(pre, binder.selected);
             }
@@ -163,12 +170,13 @@ class PM {
                 if (!page.url) {
                     page.inited = true;
                     page.init && page.init(page);
+                    page.onshow && page.onshow(page);
                 } else if (!page.urlInited && !page.lazy) {
                     page.inited = true;
-                    // page.urlInited = true;
                     self.loadHTML(dst, page.url, function () {
                         page.urlInited = true;
                         page.init && page.init(page);
+                        page.onshow && page.onshow(page);
                     });
                 }
             }

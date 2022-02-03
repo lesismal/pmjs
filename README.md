@@ -7,7 +7,6 @@
 - [x] Changing Page Without Changing Routers
 - [x] Async Loading HTML/JS
 - [x] Event Management, Pub/Sub
-- [x] JS/TS Supported
 - [x] HashRouter Supported
 
 ## Implementation

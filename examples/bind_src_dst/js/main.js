@@ -8,7 +8,11 @@ let pages = [
         init: function (page) {
             console.log("page_1 init");
         },
-        // onshow will be called every time when this page is displayed
+        // onload will be called every time when this page url is loaded
+        onload: function (page) {
+            console.log("page_1 onload");
+        },
+         // onshow will be called every time when this page is displayed
         onshow: function (page) {
             console.log("page_1 onshow");
         },
@@ -26,6 +30,10 @@ let pages = [
         init: function (page) {
             console.log("page_2 init");
         },
+        // onload will be called every time when this page url is loaded
+        onload: function (page) {
+            console.log("page_2 onload");
+        },
         onshow: function (page) {
             console.log("page_2 onshow");
         },
@@ -36,7 +44,7 @@ let pages = [
     // many pages ...
 ];
 $pm.bindPages(pages);
-$pm.select("page_1");
+// $pm.select("page_1");
 $pm.listenRouter();
 
 let i = 0;

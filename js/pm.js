@@ -114,7 +114,11 @@ class PM {
 
                 if (pre) {
                     self.element(pre.dst).style.display = 'none';
-                    pre.onhide && pre.onhide(pre);
+                    if (pre.loading) {
+                        pre.hiding = pre.onhide;
+                    } else {
+                        pre.onhide && pre.onhide(pre);
+                    }
                 }
 
                 pid && self.select(pid);
@@ -124,19 +128,26 @@ class PM {
                     page.inited = true;
                     if (page.url && !page.urlInited) {
                         page.urlInited = true;
+                        page.loading = true;
                         self.loadHTML(dst, page.url, function () {
+                            page.loading = false;
                             page.urlInited = true;
                             page.init && page.init(page);
+                            page.onload && page.onload(page);
                             page.onshow && page.onshow(page);
+                            page.hiding && page.hiding(page);
+                            page.hiding = undefined;
                             f && f(page);
                         });
                     } else {
                         page.init && page.init(page);
+                        // page.onload && page.onload(page);
                         page.onshow && page.onshow(page);
                         f && f(page);
                     }
                 } else {
-                    !(page.url && !page.urlInited) && page.onshow && page.onshow(page);
+                    // !(page.url && !page.urlInited) && page.onload && page.onload(page);
+                    page.onshow && page.onshow(page);
                     f && f(page);
                 }
                 onchange && onchange(pre, selected);
@@ -155,13 +166,19 @@ class PM {
                 if (!page.url) {
                     page.inited = true;
                     page.init && page.init(page);
-                    page.onshow && page.onshow(page);
+                    // page.onload && page.onload(page);
                 } else if (!page.urlInited && !page.lazy) {
                     page.inited = true;
+                    selected = page;
+                    page.loading = true;
                     self.loadHTML(dst, page.url, function () {
+                        page.loading = false;
                         page.urlInited = true;
                         page.init && page.init(page);
+                        page.onload && page.onload(page);
                         page.onshow && page.onshow(page);
+                        page.hiding && page.hiding(page);
+                        page.hiding = undefined;
                     });
                 }
             }

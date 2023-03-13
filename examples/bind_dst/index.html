@@ -24,6 +24,10 @@
                 init: function (page) {
                     console.log("page_1 init");
                 },
+                // onload will be called every time when this page url is loaded
+                onload: function (page) {
+                    console.log("page_1 onload");
+                },
                 // onshow will be called every time when this page is displayed
                 onshow: function (page) {
                     console.log("page_1 onshow");
@@ -39,6 +43,10 @@
                 lazy: true,
                 init: function (page) {
                     console.log("page_2 init");
+                },
+                // onload will be called every time when this page url is loaded
+                onload: function (page) {
+                    console.log("page_1 onload");
                 },
                 onshow: function (page) {
                     console.log("page_2 onshow");
